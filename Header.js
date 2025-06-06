@@ -1,4 +1,26 @@
+import { useState, useEffect, useRef } from "react";
+import { Box, HStack } from "@chakra-ui/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { socials } from "../data/socials"; // Asegúrate de tener esta lista
+
 const Header = () => {
+  const [prevScrollPos, setPrevScrollPos] = useState(0);
+  const [visible, setVisible] = useState(true);
+  const headerRef = useRef();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollPos = window.pageYOffset;
+      const isVisible = prevScrollPos > currentScrollPos || currentScrollPos < 10;
+
+      setPrevScrollPos(currentScrollPos);
+      setVisible(isVisible);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [prevScrollPos]);
+
   const handleClick = (anchor) => (e) => {
     e.preventDefault();
     const id = `${anchor}-section`;
@@ -9,7 +31,15 @@ const Header = () => {
   };
 
   return (
-    <Box backgroundColor="#18181b">
+    <Box
+      ref={headerRef}
+      transform={visible ? "translateY(0)" : "translateY(-200px)"}
+      transition="transform 0.3s ease-in-out"
+      backgroundColor="#18181b"
+      position="fixed"
+      width="100%"
+      zIndex={10}
+    >
       <HStack px={16} py={4} justifyContent="space-between" alignItems="center">
         <nav>
           <HStack spacing={8}>
@@ -30,3 +60,5 @@ const Header = () => {
     </Box>
   );
 };
+
+export default Header;
